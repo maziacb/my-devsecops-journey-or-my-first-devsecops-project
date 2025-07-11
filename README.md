@@ -1,1 +1,1 @@
-# my-devsecops-journey-or-my-first-devsecops-project
+# my-devsecops-journey
