@@ -30,7 +30,7 @@ jobs:
         run: docker build -t ${{ env.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE_NAME }}:latest .
 
       - name: Push Docker image to Docker Hub
-        run: docker push ${{ env.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE_NAME }}:latest
+
 
 
 - name: Run Trivy vulnerability scan
@@ -42,7 +42,10 @@ jobs:
           severity: 'CRITICAL,HIGH' # Only report Critical and High severity vulnerabilities
           ignore-unfixed: true # Only report vulnerabilities with a fix available
 
-        
+
+      
+        run: docker push ${{ env.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE_NAME }}:latest
+       
 
       # --- Optional: Basic Security Scan (Hadolint for Dockerfile best practices) ---
       - name: Install Hadolint
