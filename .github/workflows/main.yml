@@ -30,30 +30,24 @@ jobs:
         run: docker build -t ${{ env.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE_NAME }}:latest .
 
       - name: Push Docker image to Docker Hub
-
-
-
-- name: Run Trivy vulnerability scan
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: '${{ env.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE_NAME }}:latest'
-          format: 'table' # or 'json' for machine readability
-          exit-code: '1' # Fail the job if vulnerabilities are found
-          severity: 'CRITICAL,HIGH' # Only report Critical and High severity vulnerabilities
-          ignore-unfixed: true # Only report vulnerabilities with a fix available
-
-
-      
         run: docker push ${{ env.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE_NAME }}:latest
-       
 
       # --- Optional: Basic Security Scan (Hadolint for Dockerfile best practices) ---
       - name: Install Hadolint
         run: |
           sudo wget -O /bin/hadolint "https://github.com/hadolint/hadolint/releases/download/v2.12.0/hadolint-Linux-x86_64"
           sudo chmod +x /bin/hadolint
-        # You can adjust the version based on the latest release if needed
 
       - name: Run Hadolint Scan
-        run: hadolint Dockerfile # This will check your Dockerfile against best practices
-        continue-on-error: true # Allow the workflow to continue even if Hadolint finds issues
+        run: hadolint Dockerfile
+        continue-on-error: true
+
+      # --- Trivy Vulnerability Scan ---
+      - name: Run Trivy vulnerability scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: '${{ env.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE_NAME }}:latest'
+          format: 'table'
+          exit-code: '1'
+          severity: 'CRITICAL,HIGH'
+          ignore-unfixed: true
