@@ -1,0 +1,44 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main # Trigger on pushes to the main branch
+  pull_request:
+    branches:
+      - main # Trigger on pull requests to the main branch
+
+env:
+  DOCKER_IMAGE_NAME: flask-devsecops-app # Name of your Docker image
+  DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }} # GitHub Secret for Docker Hub username
+
+jobs:
+  build-and-push-docker:
+    runs-on: ubuntu-latest # Run on a fresh Ubuntu virtual machine
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4 # Action to checkout your repository code
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ env.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }} # Use the GitHub Secret for password
+
+      - name: Build Docker image
+        run: docker build -t ${{ env.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE_NAME }}:latest .
+
+      - name: Push Docker image to Docker Hub
+        run: docker push ${{ env.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE_NAME }}:latest
+
+      # --- Optional: Basic Security Scan (Hadolint for Dockerfile best practices) ---
+      - name: Install Hadolint
+        run: |
+          sudo wget -O /bin/hadolint "https://github.com/hadolint/hadolint/releases/download/v2.12.0/hadolint-Linux-x86_64"
+          sudo chmod +x /bin/hadolint
+        # You can adjust the version based on the latest release if needed
+
+      - name: Run Hadolint Scan
+        run: hadolint Dockerfile # This will check your Dockerfile against best practices
+        continue-on-error: true # Allow the workflow to continue even if Hadolint finds issues
