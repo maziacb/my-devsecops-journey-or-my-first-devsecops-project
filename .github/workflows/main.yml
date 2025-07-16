@@ -42,7 +42,7 @@ jobs:
         run: hadolint Dockerfile
         continue-on-error: true
 
-      # --- Trivy Vulnerability Scan ---
+  # --- Trivy Vulnerability Scan ---
       - name: Run Trivy vulnerability scan
         uses: aquasecurity/trivy-action@master
         with:
