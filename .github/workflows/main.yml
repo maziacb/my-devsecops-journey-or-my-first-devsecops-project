@@ -32,7 +32,7 @@ jobs:
       - name: Push Docker image to Docker Hub
         run: docker push ${{ env.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE_NAME }}:latest
 
-     # --- Optional: Basic Security Scan (Hadolint for Dockerfile best practices) ---
+      # --- Optional: Basic Security Scan (Hadolint for Dockerfile best practices) ---
       - name: Install Hadolint
         run: |
           sudo wget -O /bin/hadolint "https://github.com/hadolint/hadolint/releases/download/v2.12.0/hadolint-Linux-x86_64"
@@ -48,6 +48,6 @@ jobs:
         with:
           image-ref: '${{ env.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE_NAME }}:latest'
           format: 'table'
-          exit-code: '1' # Fail the job if vulnerabilities are found
-          severity: 'CRITICAL,HIGH' # Only report Critical and High severity vulnerabilities
+          exit-code: '1' # Fail the job if Critical or High vulnerabilities are found
+          severity: 'CRITICAL,HIGH'
           ignore-unfixed: true # Only report vulnerabilities with a fix available
